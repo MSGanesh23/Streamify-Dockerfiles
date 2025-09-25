@@ -21,8 +21,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.backend
     container_name: streamify-backend
     ports:
       - "6086:8080"
@@ -38,11 +38,11 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.frontend
     container_name: streamify-frontend
     ports:
-      - "6085:8080"
+      - "6085:80"
     depends_on:
       - backend
     networks:
