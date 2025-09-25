@@ -1,25 +1,30 @@
-# Step 1: Build stage (Vite app build)
-FROM node:18 AS build-stage
+# Step 1: Build stage
+FROM node:20 AS build
 WORKDIR /app
 
-# Copy package files first
-COPY package*.json ./
+# Install git and clone repo
+RUN apt-get update && apt-get install -y git
+RUN git clone https://github.com/MSGanesh23/Streamify-Frontend-Deploy repo
 
-# Install dependencies (fresh inside Linux container)
-RUN npm install
+# Use repo root (package.json + index.html are here)
+WORKDIR /app/repo
 
-# Copy all source code after installing dependencies
-COPY . .
+# Install dependencies
+RUN npm install --include=dev
+RUN npm install vite@latest --save-dev
 
-# Build the frontend
-RUN npm run build
+# 🔑 Fix esbuild binary permission issue
+RUN chmod +x node_modules/@esbuild/linux-x64/bin/esbuild
 
-# Step 2: Runtime stage (Tomcat)
-FROM tomcat:9-jdk17
-RUN rm -rf /usr/local/tomcat/webapps/*
+# Build frontend
+RUN npx vite build
 
-# Copy built frontend to Tomcat
-COPY --from=build-stage /app/dist /usr/local/tomcat/webapps/frontapp1
+# Step 2: Runtime stage (serve static files with nginx)
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
 
-EXPOSE 6085
-CMD ["catalina.sh", "run"]
+# Copy dist build from build stage
+COPY --from=build /app/repo/dist ./
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
