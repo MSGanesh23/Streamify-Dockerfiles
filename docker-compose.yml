@@ -3,10 +3,10 @@ version: "3.9"
 services:
   db:
     image: mysql:8
-    container_name: db
+    container_name: streamify-db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: streamify-db
+      MYSQL_DATABASE: streamify_db
     ports:
       - "3308:3306"
     networks:
@@ -21,13 +21,13 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile.backend
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: streamify-backend
     ports:
-      - "8086:8080"
+      - "6086:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/streamify-db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/streamify_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     depends_on:
@@ -38,11 +38,11 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: streamify-frontend
     ports:
-      - "8085:8080"
+      - "6085:8080"
     depends_on:
       - backend
     networks:
