@@ -93,23 +93,3 @@ ENTRYPOINT ["java","-jar","app.jar"]# Build stage
 #EXPOSE 8080
 #ENTRYPOINT ["java","-jar","app.jar"]
 
-# Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-WORKDIR /app
-
-# Install git and clone repo
-RUN apt-get update && apt-get install -y git
-RUN git clone https://github.com/MSGanesh23/Streamify-Backend-Deploy repo
-
-# Move into repo root (pom.xml is here)
-WORKDIR /app/repo
-
-# Build Spring Boot jar
-RUN mvn clean package -DskipTests
-
-# Stage 2: Run JAR
-FROM eclipse-temurin:21
-WORKDIR /app
-COPY --from=build /app/repo/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
