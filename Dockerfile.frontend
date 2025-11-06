@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install git and clone repo
 RUN apt-get update && apt-get install -y git
-RUN git clone https://github.com/MSGanesh23/Streamify-Frontend-Deploy repo
+RUN git clone https://github.com/KvnBalaji4/Streamify_frontend3.git repo
 
 # Use repo root (package.json + index.html are here)
 WORKDIR /app/repo

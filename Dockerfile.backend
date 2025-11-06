@@ -1,154 +1,28 @@
-# Build stage
-
-#FROM maven:3.9.6-eclipse-temurin-21 AS build
-
-#WORKDIR /app
-
-
-
-# Clone repo
-
-#RUN apt-get update && apt-get install -y git
-
-#RUN git clone https://github.com/MSGanesh23/Streamify-Backend-Deploy repo
-
-#WORKDIR /app/repo/backend
-
-
-
-# Build Spring Boot jar
-
-#RUN mvn clean package -DskipTests
-
-
-
-# Run stage
-
-#FROM eclipse-temurin:21
-
-#WORKDIR /app
-
-#COPY --from=build /app/repo/backend/target/*.jar app.jar
-
-#EXPOSE 8080
-
-#ENTRYPOINT ["java","-jar","app.jar"]
-
-
-
-# Stage 1: Build
-
+# Stage 1: Build the application
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-
-
-# Install git and clone repo
-
+# Install Git and clone the repository
 RUN apt-get update && apt-get install -y git
+RUN git clone https://github.com/MSGanesh23/Streamify_backend13.git repo
 
-RUN git clone https://github.com/MSGanesh23/Streamify-Backend-Deploy repo
-
-
-
-# Move into repo root (pom.xml is here)
-
+# Move into the repo root (where the pom.xml is located)
 WORKDIR /app/repo
 
-
-
-# Build Spring Boot jar
-
+# Build the Spring Boot jar file, skipping tests
 RUN mvn clean package -DskipTests
 
-
-
-# Stage 2: Run JAR
-
+# Stage 2: Run the application
 FROM eclipse-temurin:21
 
 WORKDIR /app
 
+# Copy the built JAR file from the build stage into the runtime image
 COPY --from=build /app/repo/target/*.jar app.jar
 
+# Expose port 8080 (default for Spring Boot)
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","app.jar"]# Build stage
-#FROM maven:3.9.6-eclipse-temurin-21 AS build
-#WORKDIR /app
-
-# Clone repo
-#RUN apt-get update && apt-get install -y git
-#RUN git clone https://github.com/MSGanesh23/Streamify-Backend-Deploy repo
-#WORKDIR /app/repo/backend
-
-# Build Spring Boot jar
-#RUN mvn clean package -DskipTests
-
-# Run stage
-#FROM eclipse-temurin:21
-#WORKDIR /app
-#COPY --from=build /app/repo/backend/target/*.jar app.jar
-#EXPOSE 8080
-#ENTRYPOINT ["java","-jar","app.jar"]
-
-# Stage 1: Build
-
-
-
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-
-
-WORKDIR /app
-
-
-
-
-
-# Install git and clone repo
-
-
-RUN apt-get update && apt-get install -y git
-
-
-RUN git clone https://github.com/MSGanesh23/Streamify-Backend-Deploy repo
-
-
-
-
-
-# Move into repo root (pom.xml is here)
-
-
-WORKDIR /app/repo
-
-
-
-
-
-# Build Spring Boot jar
-
-
-RUN mvn clean package -DskipTests
-
-
-
-
-
-# Stage 2: Run JAR
-
-
-FROM eclipse-temurin:21
-
-
-WORKDIR /app
-
-
-COPY --from=build /app/repo/target/*.jar app.jar
-
-
-EXPOSE 8080
-
-
-ENTRYPOINT ["java","-jar","app.jar"]
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "app.jar"]
